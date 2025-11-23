@@ -1,0 +1,5 @@
+{
+  "name": "SaaS Dashboard Frontend",
+  "description": "A comprehensive frontend for a SaaS application, including authentication, dashboard, user info, API key management, and billing integration with Stripe.",
+  "requestFramePermissions": []
+}
