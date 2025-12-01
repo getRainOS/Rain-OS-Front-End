@@ -22,7 +22,9 @@ export const LoginPage: React.FC = () => {
     setError(null);
     try {
       const response = await api.post<{ apiKey: string }>('/auth/login', { email, password }, false);
-      await login(response.apiKey);
+      await login(response?.apiKey);
+      console.log("login response",response);
+      localStorage.setItem('apiKey', response?.apiKey);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to login');

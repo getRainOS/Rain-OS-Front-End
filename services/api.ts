@@ -24,24 +24,24 @@ async function request<T>(
 
   // Dummy User Mock (requires a specific apiKey for testing without backend)
   if (apiKey === 'dummy-api-key-for-testing') {
-    if (method === 'GET' && endpoint === '/users/me') {
-      const dummyUser: User = {
-        id: 'usr_dummy123',
-        email: 'demo@rainos.com',
-        apiKey: 'dummy-api-key-for-testing',
-        subscriptionStatus: 'active', // or 'cancelled', 'past_due'
-        usage: {
-          count: 12,
-          limit: 100, // Set to 5 to test "Free" view, 100 to test "Business" view
-        },
-      };
-      return Promise.resolve(dummyUser as T);
-    }
+    // if (method === 'GET' && endpoint === '/users/me') {
+    //   const dummyUser: User = {
+    //     id: 'usr_dummy123',
+    //     email: 'demo@rainos.com',
+    //     apiKey: 'dummy-api-key-for-testing',
+    //     subscriptionStatus: 'active', // or 'cancelled', 'past_due'
+    //     usage: {
+    //       count: 12,
+    //       limit: 100, // Set to 5 to test "Free" view, 100 to test "Business" view
+    //     },
+    //   };
+    //   return Promise.resolve(dummyUser as T);
+    // }
 
     // Mock Regenerate Key
-    if (method === 'POST' && endpoint === '/users/me/regenerate-key') {
-        return Promise.resolve({ apiKey: 'new-dummy-key-' + Date.now() } as T);
-    }
+    // if (method === 'POST' && endpoint === '/users/me/regenerate-key') {
+    //     return Promise.resolve({ apiKey: 'new-dummy-key-' + Date.now() } as T);
+    // }
 
     // Mock Stripe
     if (endpoint.includes('/stripe/')) {

@@ -80,8 +80,10 @@ export const DashboardHomePage: React.FC = () => {
     setError(null);
     try {
         await api.post('/users/me/regenerate-key', {});
-        await refetchUser();
+        // await refetchUser();
+        
     } catch (err: any) {
+        console.log(`error while generating api key`,err);
         setError(err.message || 'Failed to regenerate key');
     } finally {
         setIsRegenerating(false);
@@ -91,6 +93,9 @@ export const DashboardHomePage: React.FC = () => {
   if (!user) {
     return null;
   }
+
+//   console.log("user is here",user);
+  
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
