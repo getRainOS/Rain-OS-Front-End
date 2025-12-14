@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
 import { AuthLayout } from './AuthLayout';
@@ -15,6 +15,18 @@ export const LoginPage: React.FC = () => {
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check for Google OAuth errors in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const googleError = params.get('error');
+    if (googleError) {
+      setError(`Google Sign-in failed: ${googleError.replace(/_/g, ' ')}`);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash.split('?')[0]);
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

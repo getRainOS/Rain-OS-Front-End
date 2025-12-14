@@ -9,5 +9,6 @@ export interface User {
   email: string;
   apiKey: string;
   subscriptionStatus: 'active' | 'cancelled' | 'past_due';
+  stripePriceId?: string; // Current subscription price ID
   usage: Usage;
 }
