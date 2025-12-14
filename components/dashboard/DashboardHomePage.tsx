@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { api } from '../../services/api';
+import { getCurrentPlanDetails, formatSubscriptionStatus } from '../../services/stripe';
 
 const UsageBar: React.FC<{ count: number; limit: number }> = ({ count, limit }) => {
     const percentage = limit > 0 ? Math.min((count / limit) * 100, 100) : 0;
@@ -19,7 +20,7 @@ const UsageBar: React.FC<{ count: number; limit: number }> = ({ count, limit }) 
                 <div>
                     <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 transition-colors duration-300">Usage</p>
                     <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">{count.toLocaleString()}</span>
-                    <span className="text-sm text-slate-500 ml-1">/ {limit.toLocaleString()} Actions</span>
+                    <span className="text-sm text-slate-500 ml-1">/ {limit.toLocaleString()} Optimizations</span>
                 </div>
                 <span className="text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 transition-colors duration-300">
                     {percentage.toFixed(1)}% Used
@@ -32,7 +33,7 @@ const UsageBar: React.FC<{ count: number; limit: number }> = ({ count, limit }) 
                 >
                 </div>
             </div>
-            <p className="text-xs text-slate-400 mt-2 italic">1 Analysis = 1 Action</p>
+            <p className="text-xs text-slate-400 mt-2 italic">1 Analysis = 1 Answer Engine Optimization</p>
         </div>
     );
 }
@@ -79,9 +80,15 @@ export const DashboardHomePage: React.FC = () => {
     setIsRegenerating(true);
     setError(null);
     try {
-        await api.post('/users/me/regenerate-key', {});
-        // await refetchUser();
-        
+        const response = await api.post<{ apiKey: string; id: string; email: string; usage: any; subscriptionStatus: any }>('/users/me/regenerate-key', {});
+
+        // Update the API key in localStorage immediately
+        if (response.apiKey) {
+            localStorage.setItem('apiKey', response.apiKey);
+            // Refetch user data to update the context with the new key
+            await refetchUser();
+        }
+
     } catch (err: any) {
         console.log(`error while generating api key`,err);
         setError(err.message || 'Failed to regenerate key');
@@ -94,8 +101,8 @@ export const DashboardHomePage: React.FC = () => {
     return null;
   }
 
-//   console.log("user is here",user);
-  
+  const planDetails = getCurrentPlanDetails(user);
+  const statusInfo = formatSubscriptionStatus(user.subscriptionStatus);
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
@@ -103,6 +110,13 @@ export const DashboardHomePage: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">User Overview</h1>
             <p className="text-slate-500 dark:text-slate-400 mt-2 transition-colors duration-300">Manage your Rain OS plugin connection and subscription.</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Current Plan</p>
+            <p className={`text-xl font-bold ${planDetails.name === 'Free' ? 'text-slate-600 dark:text-slate-400' : 'text-blue-600 dark:text-blue-400'}`}>
+              {planDetails.name}
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{planDetails.limit} optimizations/month</p>
           </div>
       </div>
       
@@ -122,8 +136,8 @@ export const DashboardHomePage: React.FC = () => {
                     </div>
                     <div className="text-right hidden sm:block">
                         <p className="text-xs text-slate-500 uppercase font-semibold">Status</p>
-                        <p className={`text-xl font-bold capitalize ${user.subscriptionStatus === 'active' ? 'text-green-600 dark:text-green-400' : 'text-slate-900 dark:text-white'}`}>
-                            {user.subscriptionStatus.replace('_', ' ')}
+                        <p className={`text-xl font-bold capitalize text-${statusInfo.color}-600 dark:text-${statusInfo.color}-400`}>
+                            {statusInfo.label}
                         </p>
                     </div>
                 </div>
@@ -131,7 +145,7 @@ export const DashboardHomePage: React.FC = () => {
                 <div className="border-t border-slate-100 dark:border-slate-800 pt-6 transition-colors duration-300">
                     <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4 flex items-center transition-colors duration-300">
                         <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        Monthly Actions Limit
+                        Answer Engine Optimizations
                     </h3>
                     <UsageBar count={user.usage.count} limit={user.usage.limit} />
                 </div>
