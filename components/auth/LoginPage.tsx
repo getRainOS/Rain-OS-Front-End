@@ -95,7 +95,7 @@ export const LoginPage: React.FC = () => {
         </div>
       </form>
       
-      <div className="mt-4">
+      {/* <div className="mt-4">
           <Button 
             variant="secondary" 
             className="w-full" 
@@ -105,7 +105,7 @@ export const LoginPage: React.FC = () => {
           >
             Continue as Demo User
           </Button>
-      </div>
+      </div> */}
 
       <div className="mt-5">
         <div className="relative">
