@@ -1,6 +1,6 @@
 
 // export const API_BASE_URL = 'https://356109ff0353.ngrok-free.app/api';
-export const API_BASE_URL = 'http://localhost:3001/api';
+export const API_BASE_URL = 'https://rainosheadlessaeoanalysisengine-production-a3e4.up.railway.app/api';
 
 
 // Stripe Price IDs for subscription plans
