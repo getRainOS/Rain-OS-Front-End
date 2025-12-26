@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { createCheckoutSession, createPortalSession, handleCheckoutRedirect, getCurrentPlanDetails } from '../../services/stripe';
@@ -20,7 +19,7 @@ interface PlanCardProps {
 const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features, priceId, onUpgrade, isLoading, recommended }) => (
     <div className={`relative flex flex-col h-full ${recommended ? 'md:-mt-6 md:mb-6 transform md:scale-105' : ''}`}>
         {recommended && (
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 whitespace-nowrap">
                 <span className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-xl shadow-blue-500/40 uppercase tracking-wide">
                     Best Value
                 </span>
@@ -32,11 +31,11 @@ const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features
             {recommended && <div className="absolute inset-0 bg-blue-500/5 rounded-2xl pointer-events-none"></div>}
 
             <div className="flex-grow relative z-10 p-2">
-                <div className="flex justify-between items-center mb-4 whitespace-nowrap">
+                <div className="flex flex-col items-start gap-2 mb-4">
                     <div>
                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white transition-colors duration-300">{title}</h2>
                     </div>
-                    <div className="text-right flex items-center justify-center">
+                    <div>
                         <span className="text-16 font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">{price}</span>
                     </div>
                 </div>
