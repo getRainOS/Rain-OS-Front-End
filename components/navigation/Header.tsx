@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Left side of header */}
           <div className="flex items-center">
-             <span className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors duration-300">Rain OS</span>
+             <span className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors duration-300">rain OS</span>
              <span className="mx-2 text-slate-400 dark:text-slate-600">/</span>
              <span className="text-slate-800 dark:text-slate-200 text-sm font-semibold tracking-wide transition-colors duration-300">Dashboard</span>
           </div>

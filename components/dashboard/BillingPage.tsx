@@ -32,12 +32,12 @@ const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features
             {recommended && <div className="absolute inset-0 bg-blue-500/5 rounded-2xl pointer-events-none"></div>}
 
             <div className="flex-grow relative z-10 p-2">
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-center mb-4 whitespace-nowrap">
                     <div>
                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white transition-colors duration-300">{title}</h2>
                     </div>
-                    <div className="text-right">
-                        <span className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">{price}</span>
+                    <div className="text-right flex items-center justify-center">
+                        <span className="text-16 font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">{price}</span>
                     </div>
                 </div>
 

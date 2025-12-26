@@ -109,7 +109,7 @@ export const DashboardHomePage: React.FC = () => {
       <div className="flex justify-between items-end border-b border-slate-200 dark:border-slate-800 pb-6 transition-colors duration-300">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-300">User Overview</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2 transition-colors duration-300">Manage your Rain OS plugin connection and subscription.</p>
+            <p className="text-slate-500 dark:text-slate-400 mt-2 transition-colors duration-300">Manage your rain OS plugin connection and subscription.</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Current Plan</p>
@@ -130,7 +130,7 @@ export const DashboardHomePage: React.FC = () => {
                             {user.email.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white transition-colors duration-300">Rain OS User</h3>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white transition-colors duration-300">rain OS User</h3>
                             <p className="text-slate-500 dark:text-slate-400 text-sm transition-colors duration-300">{user.email}</p>
                         </div>
                     </div>
