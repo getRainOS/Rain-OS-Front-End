@@ -1,5 +1,6 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LoginPage } from './components/auth/LoginPage';
@@ -58,9 +59,11 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
         <AuthProvider>
-          <HashRouter>
+          <BrowserRouter>
+
             <AppRoutes />
-          </HashRouter>
+            <Toaster position="top-right" />
+          </BrowserRouter>
         </AuthProvider>
     </ThemeProvider>
   );

@@ -4,7 +4,12 @@ import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../common/Button';
 import { ThemeToggle } from '../common/ThemeToggle';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
 
   // Helper to determine status color
@@ -22,10 +27,29 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left side of header */}
-          <div className="flex items-center">
-             <span className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors duration-300">rain OS</span>
-             <span className="mx-2 text-slate-400 dark:text-slate-600">/</span>
-             <span className="text-slate-800 dark:text-slate-200 text-sm font-semibold tracking-wide transition-colors duration-300">Dashboard</span>
+          <div className="flex items-center gap-4">
+            {/* Mobile menu button */}
+            <button
+              type="button"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors duration-200"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle sidebar"
+            >
+              {sidebarOpen ? (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+            <div className="flex items-center">
+              <span className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors duration-300">rain OS</span>
+              <span className="mx-2 text-slate-400 dark:text-slate-600">/</span>
+              <span className="text-slate-800 dark:text-slate-200 text-sm font-semibold tracking-wide transition-colors duration-300">Dashboard</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-6">

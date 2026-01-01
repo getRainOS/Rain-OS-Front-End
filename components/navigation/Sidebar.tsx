@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link,useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { Logo } from '../common/Logo';
-import { createPortalSession } from '../../services/stripe';
+import { createPortalSession, getCurrentPlanDetails } from '../../services/stripe';
+import { useAuth } from '../../hooks/useAuth';
 
 interface NavigationItem {
   name: string;
@@ -16,9 +18,20 @@ function classNames(...classes: string[]) {
 
 export const Sidebar: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }> = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
   const handlePortalRedirect = async () => {
+    // Check if user is on Free plan
+    if (user) {
+        const currentPlan = getCurrentPlanDetails(user);
+        if (currentPlan.name === 'Free') {
+            toast.error('You must upgrade to a paid plan to manage your subscription.');
+            navigate('/billing');
+            return;
+        }
+    }
     try {
       setLoadingAction('Manage Subscription');
       const url = await createPortalSession();
@@ -36,7 +49,7 @@ export const Sidebar: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: bo
   ];
 
   return (
-    <div className="flex-shrink-0 w-72 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-700/50 text-slate-900 dark:text-slate-200 flex flex-col relative transition-colors duration-300">
+    <div className="h-full flex-shrink-0 w-72 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-700/50 text-slate-900 dark:text-slate-200 flex flex-col relative transition-colors duration-300">
         {/* Subtle gradient top line */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50"></div>
 
@@ -56,7 +69,10 @@ export const Sidebar: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: bo
                     return (
                         <button
                             key={item.name}
-                            onClick={item.action}
+                            onClick={() => {
+                                item.action?.();
+                                setSidebarOpen(false);
+                            }}
                             disabled={isActionLoading}
                             className={`w-full group flex items-center px-4 py-3 text-sm font-medium rounded-r-lg transition-all duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 border-l-2 border-transparent ${isActionLoading ? 'opacity-70 cursor-wait' : ''}`}
                         >
@@ -73,6 +89,7 @@ export const Sidebar: React.FC<{ sidebarOpen: boolean; setSidebarOpen: (open: bo
                 <Link
                     key={item.name}
                     to={item.href!}
+                    onClick={() => setSidebarOpen(false)}
                     className={classNames(
                         isActive 
                             ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-l-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 

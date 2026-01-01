@@ -14,9 +14,10 @@ interface PlanCardProps {
     onUpgrade: (priceId: string) => void;
     isLoading: boolean;
     recommended?: boolean;
+    isCurrent: boolean;
 }
 
-const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features, priceId, onUpgrade, isLoading, recommended }) => (
+const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features, priceId, onUpgrade, isLoading, recommended, isCurrent }) => (
     <div className={`relative flex flex-col h-full ${recommended ? 'md:-mt-6 md:mb-6 transform md:scale-105' : ''}`}>
         {recommended && (
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 whitespace-nowrap">
@@ -57,7 +58,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ title, price, description, features
                 </div>
             </div>
             <div className="mt-8 relative z-10 p-2">
-                {title === 'Free' ? (
+                {isCurrent ? (
                     <Button
                         className="w-full"
                         disabled={true}
@@ -112,6 +113,20 @@ export const BillingPage: React.FC = () => {
     const handleUpgrade = async (priceId: string) => {
         setIsLoading(true);
         setError(null);
+
+        // Safety: If user is already on a paid plan, redirect to Portal to manage/update it.
+        // Creating a new checkout session would create a DUPLICATE subscription.
+        if (!isFreePlan) {
+            try {
+                const url = await createPortalSession();
+                window.location.href = url;
+            } catch (err: any) {
+                setError(err.message || 'Failed to open billing portal.');
+                setIsLoading(false);
+            }
+            return;
+        }
+
         try {
             const url = await createCheckoutSession(priceId);
             window.location.href = url;
@@ -215,9 +230,10 @@ export const BillingPage: React.FC = () => {
                         'Schema Extraction: Structured data opportunities',
                         'QA-Format Detection: Question/Answer optimization',
                     ]}
-                    priceId=""
-                    onUpgrade={() => {}}
+                    priceId={STRIPE_PRICE_IDS.free}
+                    onUpgrade={handleUpgrade}
                     isLoading={false}
+                    isCurrent={currentPlan.name === 'Free'}
                 />
                 <PlanCard
                     title="Business"
@@ -239,6 +255,7 @@ export const BillingPage: React.FC = () => {
                     onUpgrade={handleUpgrade}
                     isLoading={isLoading}
                     recommended={true}
+                    isCurrent={currentPlan.name === 'Business'}
                 />
                 <PlanCard
                     title="Pro"
@@ -252,6 +269,7 @@ export const BillingPage: React.FC = () => {
                     priceId={STRIPE_PRICE_IDS.pro}
                     onUpgrade={handleUpgrade}
                     isLoading={isLoading}
+                    isCurrent={currentPlan.name === 'Pro'}
                 />
             </div>
 
