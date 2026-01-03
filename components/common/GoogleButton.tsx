@@ -11,9 +11,16 @@ interface GoogleButtonProps {
     text: string;
 }
 
+import { supabase } from '../../lib/supabase';
+
 export const GoogleButton: React.FC<GoogleButtonProps> = ({ text }) => {
-  const handleGoogleAuth = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+  const handleGoogleAuth = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
   };
 
   return (

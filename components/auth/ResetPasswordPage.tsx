@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { api } from '../../services/api';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import { AuthLayout } from './AuthLayout';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
@@ -11,18 +11,10 @@ export const ResetPasswordPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tokenFromUrl = params.get('token');
-    if (!tokenFromUrl) {
-      setError('Invalid or missing password reset token.');
-    }
-    setToken(tokenFromUrl);
-  }, [location]);
+  // Supabase automatically handles the access token from the URL hash #access_token=...
+  // and establishes a session. So we just need to update the user.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,17 +22,18 @@ export const ResetPasswordPage: React.FC = () => {
       setError('Passwords do not match.');
       return;
     }
-    if (!token) {
-      setError('No reset token found.');
-      return;
-    }
+    
     setIsLoading(true);
     setError(null);
     setMessage(null);
+
     try {
-      await api.post('/auth/reset-password', { token, password }, false);
+      const { error } = await supabase.auth.updateUser({ password });
+      
+      if (error) throw error;
+
       setMessage('Your password has been reset successfully. You can now sign in.');
-      setTimeout(() => navigate('/login'), 4000);
+      setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
       setError(err.message || 'Failed to reset password. The link may have expired.');
     } finally {
@@ -79,7 +72,7 @@ export const ResetPasswordPage: React.FC = () => {
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div>
-            <Button type="submit" className="w-full" isLoading={isLoading} disabled={!token || isLoading}>
+            <Button type="submit" className="w-full" isLoading={isLoading} disabled={isLoading}>
               Reset Password
             </Button>
           </div>

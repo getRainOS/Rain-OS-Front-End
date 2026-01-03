@@ -6,6 +6,7 @@ import { AuthLayout } from './AuthLayout';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { GoogleButton } from '../common/GoogleButton';
+import { supabase } from '../../lib/supabase';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -33,14 +34,20 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.post<{ apiKey: string }>('/auth/login', { email, password }, false);
-      await login(response?.apiKey);
-      console.log("login response",response);
-      localStorage.setItem('apiKey', response?.apiKey);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
       navigate('/');
+      setIsLoading(false);
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
-    } finally {
+      if (err.message.includes('Email not confirmed')) {
+          setError('Email not confirmed. Please check your inbox or click here to verify.');
+          // Or we can just set a flag to show a button
+      } else {
+          setError(err.message || 'Failed to login');
+      }
       setIsLoading(false);
     }
   };
@@ -86,7 +93,16 @@ export const LoginPage: React.FC = () => {
             }
         />
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && (
+            <div className="text-red-500 text-sm">
+                <p>{error}</p>
+                {error.includes('Email not confirmed') && (
+                    <Link to="/verify-email" state={{ email }} className="text-blue-600 hover:text-blue-500 underline mt-1 block">
+                        Verify Email / Enter Code
+                    </Link>
+                )}
+            </div>
+        )}
         
         <div className="pt-2">
           <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-none" isLoading={isLoading} disabled={isLoading || isDemoLoading}>

@@ -12,12 +12,18 @@ import { useAuth } from './hooks/useAuth';
 import { GoogleCallbackPage } from './components/auth/GoogleCallbackPage';
 import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './components/auth/ResetPasswordPage';
+import { VerifyEmailPage } from './components/auth/VerifyEmailPage';
+import { Spinner } from './components/common/Spinner';
 
 const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div></div>; 
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <Spinner size="lg" />
+      </div>
+    ); 
   }
 
   return isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" replace />;
@@ -27,7 +33,11 @@ const AuthRedirect: React.FC = () => {
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-        return null; 
+        return (
+          <div className="h-screen w-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+            <Spinner size="lg" />
+          </div>
+        ); 
     }
     
     return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
@@ -39,9 +49,12 @@ const AppRoutes: React.FC = () => {
       <Route element={<AuthRedirect />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
+
+      {/* Standalone route for Reset Password so it isn't blocked by AuthRedirect */}
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       <Route path="/auth/callback" element={<GoogleCallbackPage />} />
 

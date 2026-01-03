@@ -6,6 +6,7 @@ import { AuthLayout } from './AuthLayout';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { GoogleButton } from '../common/GoogleButton';
+import { supabase } from '../../lib/supabase';
 
 export const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,8 +21,24 @@ export const SignupPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.post<{ apiKey: string }>('/auth/signup', { email, password }, false);
-      await login(response.apiKey);
+      const { error, data } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setError('An account with this email already exists.');
+        return;
+      }
+
+      // Check for email confirmation requirement
+      if (!data.session) {
+          navigate('/verify-email', { state: { email } });
+          return;
+      }
+
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to sign up');

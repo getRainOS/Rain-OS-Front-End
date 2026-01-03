@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../../services/api';
+import { supabase } from '../../lib/supabase';
 import { AuthLayout } from './AuthLayout';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
@@ -10,19 +10,20 @@ export const ForgotPasswordPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [showSimulatedLink, setShowSimulatedLink] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setMessage(null);
-    setShowSimulatedLink(false);
     try {
-      await api.post('/auth/forgot-password', { email }, false);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) throw error;
+
       setMessage('If an account with that email exists, we have sent a password reset link.');
-      // For demonstration purposes, we show a simulated link.
-      setShowSimulatedLink(true);
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
     } finally {
@@ -35,19 +36,6 @@ export const ForgotPasswordPage: React.FC = () => {
       {message ? (
         <div className="text-center">
           <p className="text-green-400">{message}</p>
-          {showSimulatedLink && (
-            <div className="mt-4 p-4 border border-dashed border-yellow-500 rounded-md">
-              <p className="text-sm text-yellow-300">
-                This is a demo. In a real application, you would receive an email.
-              </p>
-              <Link
-                to="/reset-password?token=dummy-reset-token"
-                className="font-medium text-yellow-400 hover:text-yellow-300 block mt-2"
-              >
-                Click here to reset your password
-              </Link>
-            </div>
-          )}
           <p className="mt-6">
             <Link to="/login" className="font-medium text-blue-400 hover:text-blue-300">
               Back to Sign in
