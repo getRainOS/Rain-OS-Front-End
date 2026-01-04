@@ -158,7 +158,7 @@ export const BillingPage: React.FC = () => {
             </div>
 
             {!isFreePlan && (
-                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-500/30 mb-3">
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-500/30 !mb-5">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-blue-100 dark:bg-blue-500/20 rounded-lg transition-colors duration-300">
